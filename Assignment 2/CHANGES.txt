@@ -1,0 +1,12 @@
+I didn't change any large functionality from the original design, I did have to add some though.
+
+On the original design, there were a few class properties that were left out
+1. Needed specification on how users should store the calendars they've been added to.
+	a. If a user is added to an event that they don't have the calendar for, should they still
+		be added?
+	b. I chose to implement an EventsAdded list onto the User to keep track of this
+2. Added a None visibility to the Visibility enum, was important to give it a default value that was different from public/private
+3. Gave the user the ability to view all public calendars (ViewAllPublicCalendars())
+4. Changed "UpdateTimezone" in the Event class to "UpdateEvent", so the user can change the necessary data
+
+I believe those were all the differences from the original UML!
