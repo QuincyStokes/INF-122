@@ -96,16 +96,8 @@ class User():
 
         
 class App():
-    def __init__(self, timezone, theme):
-        self.timezone = timezone
-        self.theme = theme
+    def __init__(self):
         self.users = {}
-
-    def UpdateTimezone(self, timezone):
-        self.timezone = timezone
-        
-    def UpdateTheme(self, theme):
-        self.theme = theme
         
     def AddUser(self, user):
         self.users[user.userID] = user
@@ -124,6 +116,23 @@ class ObservableEvent:
     def notify_observers(self, event):
         for observer in self._observers:
             observer.update(event)
+
+class Settings():
+    def __init__(self, theme, timezone):
+        self.theme = theme
+        self.timezone = timezone
+        self.instance = self
+    
+    def GetInstance(self):
+        if(self.instance == None):
+            self.instance = self
+        return self.instance
+
+    def UpdateTimezone(self, timezone):
+        self.timezone = timezone
+
+    def UpdateTheme(self, theme):
+        self.theme = theme
 
 
 class Event(ObservableEvent):
