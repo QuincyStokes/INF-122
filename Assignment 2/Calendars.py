@@ -16,10 +16,7 @@ class Calendar():
         self.owner = owner
         self.users = []
         self.eventsDict = {}
-    
-    def print(self):
-        print(f"Calendar ID: {self.calendarID} | Owner: {self.owner.name} | Visibility {self.visibility.name}")
-    
+
     def AddUser(self, user):
         self.users.append(user)
         user.AddCalendar(self)
@@ -32,11 +29,11 @@ class Calendar():
         
         for user in self.users:
             print("User: ")
-            user.print()
+            print(user)
             
     def PrintAllEvents(self):
         for event in self.eventsDict:
-            self.eventsDict[event].print()
+            print(self.eventsDict[event])
     
     def AddEvent(self, event):
         self.eventsDict[event.eventID] = event
@@ -44,6 +41,8 @@ class Calendar():
     def DeleteEvent(self, eventID):
         del self.eventsDict[eventID]
         
+    def __str__(self):
+        return f"Calendar ID: {self.calendarID} | Owner: {self.owner.name} | Visibility {self.visibility.name}"
 
 class User():
     def __init__(self, userID, name, email):
@@ -57,9 +56,9 @@ class User():
     def AddCalendar(self, cal):
         self.calDict[cal.calendarID] = cal
         
-    def print(self):
-        print(f"ID: {self.userID} | Name: {self.name} | Email: {self.email}\n")
-        
+    def Update(self, event):
+        self.eventInvitations.append(event)
+        print(f"New Invitation {event.title} for {self.name}")
         
         
     def PrintCalendars(self):
@@ -67,7 +66,7 @@ class User():
             print("No dictionaries to print.")
         else:
             for key in self.calDict.keys():
-                self.calDict[key].print()
+                print(self.calDict[key])
             
     def RemoveCalendar(self, calID):
         if(calID in self.calDict.keys()):
@@ -88,26 +87,13 @@ class User():
         
     def PrintInvitations(self):
         for event in self.eventInvitations:
-            event.print()
+            print(event)
+
+    def __str__(self):
+        return f"ID: {self.userID} | Name: {self.name} | Email: {self.email}\n"
+        
             
-class Event():
-    def __init__(self, eventID, title, date, startTime, endTime, timeZone):
-        self.eventID = eventID
-        self.title = title
-        self.date = date
-        self.startTime = startTime
-        self.endTime = endTime
-        self.timeZone = timeZone
-        self.invitedUsers = []
-        
-    def ShareEvent(self, user):
-        user.eventInvitations.append(self)
-        self.invitedUsers.append(user)
-        
-    def print(self):
-        print(f"Event Name: {self.title} | ID: {self.eventID} | From {self.startTime} to {self.endTime}{self.timeZone} | Attendees:")
-        for user in self.invitedUsers:
-            user.print()
+
         
 class App():
     def __init__(self, timezone, theme):
@@ -126,7 +112,38 @@ class App():
     
     def PrintUsers(self):
         for user in self.users:
-            self.users[user].print()
+            print(self.users[user])
+
+class ObservableEvent:
+    def __init__(self):
+        self._observers = []
+    
+    def add_observer(self, observer):
+        self._observers.append(observer)
+
+    def notify_observers(self, event):
+        for observer in self._observers:
+            observer.update(event)
+
+
+class Event(ObservableEvent):
+    def __init__(self, eventID, title, date, startTime, endTime, timeZone):
+        super().__init__()
+        self.eventID = eventID
+        self.title = title
+        self.date = date
+        self.startTime = startTime
+        self.endTime = endTime
+        self.timeZone = timeZone
+        
+    def ShareEvent(self, user):
+        self.add_observer(user)
+        self.notify_observers(self)
+   
+    def __str__(self):
+        return f"Event Name: {self.title} | ID: {self.eventID} | From {self.startTime} to {self.endTime}{self.timeZone} | Attendees:"
+
+    
         
 def PrintAppOptions():
     print("What would you like to do?")
@@ -188,7 +205,7 @@ def main():
             CalendarsApp.AddUser(newUser)
             currentUser = newUser
             print(f"New user created!")
-            currentUser.print()
+            print(currentUser)
             loggedIn = True
             
         
@@ -291,7 +308,7 @@ def main():
             currentEvent = None
             while(currentCalendar != None):
                 print(f"Viewing Calendar: ")
-                currentCalendar.print()
+                print(currentCalendar)
                 PrintCalendarOptions()
                 userInput = input()
                 if(userInput == "1"): #add event
